@@ -18,6 +18,6 @@ use Illuminate\Routing\Router;
 $router->group(
     ['middleware' => 'callback'],
     function (Router $router) {
-        $router->get(env('CALLBACK_URL', '/smaregi/auth/callback'), 'SmaregiAuthAction');
+        $router->get(env('SMAREGI_REDIRECT_URL', '/smaregi/auth/callback'), 'SmaregiAuthAction');
     }
 );

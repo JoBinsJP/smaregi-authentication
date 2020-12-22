@@ -6,9 +6,8 @@
     ```
     SMAREGI_CLIENT_ID=
     SMAREGI_CLIENT_SECRET=
-   
    ```
-5.`SMAREGI_REDIRECT_URL=`にリダイレクトURL（アプリ概要ページ＞環境設定タブで指定したもの）を入力する
+5. `SMAREGI_REDIRECT_URL=`にリダイレクトURL（アプリ概要ページ＞環境設定タブで指定したもの）を入力する
 6. Composerをインストールする
 7. データベースをセットアップする
    ```

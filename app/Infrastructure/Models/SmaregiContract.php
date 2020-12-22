@@ -49,7 +49,7 @@ class SmaregiContract extends Model
     public function saveContract(string $contractId, string $systemAccessToken): SmaregiContract
     {
         return SmaregiContract::updateOrCreate(
-            ['smaregi_contract_id' => $contractId],
+            ['contract_id' => $contractId],
             [
                 'smaregi_system_access_token' => $systemAccessToken,
             ]

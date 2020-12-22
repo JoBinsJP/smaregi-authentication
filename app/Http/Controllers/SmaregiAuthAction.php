@@ -66,7 +66,7 @@ class SmaregiAuthAction extends Controller
         $this->login($contract, $userData);
 
         // Fetch smaregi stores
-        $stores = $this->getStores($appAccessToken, $contract->smaregi_contract_id);
+        $stores = $this->getStores($appAccessToken, $contract->contract_id);
         dd($stores);
     }
 
@@ -148,7 +148,7 @@ class SmaregiAuthAction extends Controller
     public function saveContract(string $contractId, string $appAccessToken): SmaregiContract
     {
         return SmaregiContract::updateOrCreate(
-            ['smaregi_contract_id' => $contractId],
+            ['contract_id' => $contractId],
             [
                 'smaregi_system_access_token' => $appAccessToken,
             ]

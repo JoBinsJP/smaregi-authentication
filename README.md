@@ -1,4 +1,4 @@
-# Smaregi Authentication
+# スマレジアプリ認証機能実装（Laravel）
 
 1. リポジトリのクローン作成
 2. .env.example fileを.envにコピーする

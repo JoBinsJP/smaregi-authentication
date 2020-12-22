@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
  * @package App\Infrastructure\Models
  *
  * @property int        $id
- * @property string     $smaregi_contract_id
+ * @property string     $contract_id
  * @property string     $smaregi_system_access_token
  * @property Carbon     $created_at
  * @property Carbon     $updated_at
@@ -31,13 +31,13 @@ class SmaregiContract extends Model
      * @var string[]
      */
     protected $fillable = [
-        'smaregi_contract_id',
+        'contract_id',
         'smaregi_system_access_token',
     ];
 
     public function users(): HasMany
     {
-        return $this->hasMany(User::class, 'contract_id', 'id');
+        return $this->hasMany(User::class, 'contract_id', 'contract_id');
     }
 
     /**

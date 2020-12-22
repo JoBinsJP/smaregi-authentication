@@ -21,7 +21,7 @@ class CreateSmaregiContractsTable extends Migration
             DBTable::SMAREGI_CONTRACTS,
             function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->string('smaregi_contract_id')->unique();
+                $table->string('contract_id')->unique();
                 $table->text('smaregi_system_access_token');
                 $table->timestamps();
             }

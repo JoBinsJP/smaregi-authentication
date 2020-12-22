@@ -163,7 +163,7 @@ class SmaregiAuthAction extends Controller
     {
         $user = $smaregiContract->users()->updateOrCreate(
             [
-                'contract_id' => $smaregiContract->id,
+                'contract_id' => $smaregiContract->contract_id,
                 'email'       => Arr::get($userData, 'email'),
             ],
             [

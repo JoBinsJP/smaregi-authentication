@@ -7,9 +7,9 @@
     SMAREGI_CLIENT_ID=
     SMAREGI_CLIENT_SECRET=
    ```
-5. `SMAREGI_REDIRECT_URL=`にリダイレクトURL（アプリ概要ページ＞環境設定タブで指定したもの）を入力する
-6. Composerをインストールする
-7. データベースをセットアップする
+4. `SMAREGI_REDIRECT_URL=`にリダイレクトURL（アプリ概要ページ＞環境設定タブで指定したもの）を入力する
+5. Composerをインストールする
+6. データベースをセットアップする
    ```
     DB_CONNECTION=mysql
     DB_HOST=localhost
@@ -18,6 +18,6 @@
     DB_USERNAME=
     DB_PASSWORD=
     ```
-8. データベースマイグレーションを行う (`php artisan migrate`)
-9. アプリケーションをサーブする (`php artisan serve`)
-10. ローカルでhttp://127.0.0.1:8080にアクセスする
+7. データベースマイグレーションを行う (`php artisan migrate`)
+8. アプリケーションをサーブする (`php artisan serve`)
+9. ローカルでhttp://127.0.0.1:8080にアクセスする

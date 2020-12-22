@@ -6,6 +6,7 @@
     ```
     SMAREGI_CLIENT_ID=
     SMAREGI_CLIENT_SECRET=
+    SMAREGI_REDIRECT_URL=/smaregi/auth/callback
     ```
 4. Composerをインストールする
 5. データベースをセットアップする

@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 
 use App\Infrastructure\Libraries\HttpRequestOption;
 use App\Infrastructure\Models\SmaregiContract;
+use App\Infrastructure\Models\Store;
 use Arr;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 /**
  * Class SmaregiAuthAction
@@ -67,7 +69,11 @@ class SmaregiAuthAction extends Controller
 
         // Fetch smaregi stores
         $stores = $this->getStores($appAccessToken, $contract->contract_id);
-        dd($stores);
+
+        // Save Stores
+        $this->saveStores($contract, $stores);
+
+        return redirect()->route('dashboard');
     }
 
     public function authorizeUser(): string
@@ -79,9 +85,16 @@ class SmaregiAuthAction extends Controller
         );
     }
 
+    public function dashboard()
+    {
+        $contractId = auth()->user()->smaregi_contract->id;
+        $stores     = $this->getAllByContractId($contractId);
+
+        return view('dashboard', compact('stores'));
+    }
 
     // fetch access token
-    public function authenticate(string $authorizationCode): array
+    private function authenticate(string $authorizationCode): array
     {
         $url          = "https://id.smaregi.dev/authorize/token";
         $clientId     = env('SMAREGI_CLIENT_ID');// your client_id
@@ -109,7 +122,7 @@ class SmaregiAuthAction extends Controller
     }
 
     // fetch user info
-    public function getUserInfo(string $accessToken): array
+    private function getUserInfo(string $accessToken): array
     {
         $url    = "https://id.smaregi.dev/userinfo";
         $option = new HttpRequestOption();
@@ -120,7 +133,7 @@ class SmaregiAuthAction extends Controller
     }
 
     // fetching access token
-    public function appAccessToken(string $contractId): array
+    private function appAccessToken(string $contractId): array
     {
         $url          = "https://id.smaregi.dev/app/$contractId/token"; // contract_id from previous step
         $clientId     = env('SMAREGI_CLIENT_ID');// your client_id
@@ -145,12 +158,12 @@ class SmaregiAuthAction extends Controller
     }
 
     // save contract
-    public function saveContract(string $contractId, string $appAccessToken): SmaregiContract
+    private function saveContract(string $contractId, string $appAccessToken): SmaregiContract
     {
         return SmaregiContract::updateOrCreate(
             ['contract_id' => $contractId],
             [
-                'smaregi_system_access_token' => $appAccessToken,
+                'system_access_token' => $appAccessToken,
             ]
         );
     }
@@ -159,12 +172,12 @@ class SmaregiAuthAction extends Controller
      * @param SmaregiContract $smaregiContract
      * @param                 $userData
      */
-    public function login(SmaregiContract $smaregiContract, $userData)
+    private function login(SmaregiContract $smaregiContract, $userData)
     {
         $user = $smaregiContract->users()->updateOrCreate(
             [
-                'contract_id' => $smaregiContract->contract_id,
-                'email'       => Arr::get($userData, 'email'),
+                'smaregi_contract_id' => $smaregiContract->id,
+                'email'               => Arr::get($userData, 'email'),
             ],
             [
                 'smaregi_id'            => Arr::get($userData, 'smaregiId'),
@@ -185,7 +198,7 @@ class SmaregiAuthAction extends Controller
      * @return array
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
-    public function getStores(string $accessToken, string $contractId, array $query = []): array
+    private function getStores(string $accessToken, string $contractId, array $query = []): array
     {
         $url = "https://api.smaregi.dev/{$contractId}/pos/stores/";
 
@@ -198,13 +211,86 @@ class SmaregiAuthAction extends Controller
     }
 
     /**
+     * @param SmaregiContract $contract
+     * @param array           $stores
+     *
+     * @throws Exception
+     */
+    private function saveStores(SmaregiContract $contract, array $stores): void
+    {
+        $this->mapStoresByContract(
+            $contract,
+            collect($stores)->map(
+                function (array $store) {
+                    if ( Arr::get($store, 'division') === "2" ) {
+                        return null;
+                    }
+
+                    return $store;
+                }
+            )->filter()
+        );
+    }
+
+    /**
+     * @param SmaregiContract $contract
+     * @param Collection      $stores
+     *
+     * @throws Exception
+     */
+    private function mapStoresByContract(SmaregiContract $contract, Collection $stores): void
+    {
+        try {
+            $stores->map(
+                function ($store) use ($contract) {
+                    return $this->saveStoreByContract($contract, $store);
+                }
+            );
+        } catch (Exception $exception) {
+            throw $exception;
+        }
+    }
+
+    /**
+     * @param SmaregiContract $contract
+     * @param                 $store
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     * @throws Exception
+     */
+    private function saveStoreByContract(SmaregiContract $contract, $store)
+    {
+        return $contract->smaregi_stores()->updateOrCreate(
+            [
+                'smaregi_contract_id' => $contract->id,
+                'smaregi_store_id'    => Arr::get($store, 'storeId'),
+            ],
+            [
+                'smaregi_store_id'   => Arr::get($store, 'storeId'),
+                'smaregi_store_name' => Arr::get($store, 'storeName'),
+                'is_paused'          => Arr::get($store, 'pauseFlag'),
+            ]
+        );
+    }
+
+    /**
+     * @param string $contractId
+     *
+     * @return Collection
+     */
+    private function getAllByContractId(string $contractId): Collection
+    {
+        return Store::where('smaregi_contract_id', $contractId)->orderBy('smaregi_store_id', 'asc')->get();
+    }
+
+    /**
      * @param HttpRequestOption $requestOptions
      * @param bool              $handleCommonException
      *
      * @return array|null
      * @throws GuzzleException
      */
-    public function request(HttpRequestOption $requestOptions, bool $handleCommonException = true): ?array
+    private function request(HttpRequestOption $requestOptions, bool $handleCommonException = true): ?array
     {
         $method  = $requestOptions->method();
         $url     = $requestOptions->url();

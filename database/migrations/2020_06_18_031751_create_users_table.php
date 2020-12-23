@@ -23,14 +23,16 @@ class CreateUsersTable extends Migration
                 $table->bigIncrements('id');
                 $table->string('smaregi_id')->unique();
                 $table->string('email');
-                $table->string('contract_id');
+                $table->unsignedBigInteger('smaregi_contract_id');
                 $table->text('smaregi_access_token')->nullable();
                 $table->text('smaregi_refresh_token')->nullable();
                 $table->timestamp('logged_in_at')->nullable();
                 $table->rememberToken();
                 $table->timestamps();
 
-                $table->foreign('contract_id')->references('contract_id')->on(DBTable::SMAREGI_CONTRACTS)->onDelete('cascade');
+                $table->foreign('smaregi_contract_id')->references('id')->on(DBTable::SMAREGI_CONTRACTS)->onDelete(
+                    'cascade'
+                );
             }
         );
     }

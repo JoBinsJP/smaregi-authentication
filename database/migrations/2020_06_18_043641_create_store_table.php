@@ -6,9 +6,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Class CreateSmaregiContractsTable
+ * Class CreateStoreTable
  */
-class CreateSmaregiContractsTable extends Migration
+class CreateStoreTable extends Migration
 {
     /**
      * Run the migrations.
@@ -18,12 +18,14 @@ class CreateSmaregiContractsTable extends Migration
     public function up()
     {
         Schema::create(
-            DBTable::SMAREGI_CONTRACTS,
+            DBTable::STORES,
             function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->string('contract_id')->unique();
-                $table->text('system_access_token');
+                $table->unsignedBigInteger('smaregi_contract_id');
+                $table->string('smaregi_store_id');
+                $table->string('smaregi_store_name');
                 $table->timestamps();
+                $table->foreign('smaregi_contract_id')->references('id')->on(DBTable::SMAREGI_CONTRACTS)->onDelete('cascade');
             }
         );
     }
@@ -35,6 +37,6 @@ class CreateSmaregiContractsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(DBTable::SMAREGI_CONTRACTS);
+        Schema::dropIfExists(DBTable::STORES);
     }
 }

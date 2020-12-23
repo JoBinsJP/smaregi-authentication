@@ -14,7 +14,7 @@ use Illuminate\Support\Collection;
  *
  * @property int        $id
  * @property string     $contract_id
- * @property string     $smaregi_system_access_token
+ * @property string     $system_access_token
  * @property Carbon     $created_at
  * @property Carbon     $updated_at
  *
@@ -32,12 +32,18 @@ class SmaregiContract extends Model
      */
     protected $fillable = [
         'contract_id',
-        'smaregi_system_access_token',
+        'system_access_token',
     ];
 
     public function users(): HasMany
     {
-        return $this->hasMany(User::class, 'contract_id', 'contract_id');
+        return $this->hasMany(User::class, 'smaregi_contract_id', 'id');
+    }
+
+    /** @noinspection PhpMethodNamingConventionInspection */
+    public function smaregi_stores(): HasMany
+    {
+        return $this->hasMany(Store::class, 'smaregi_contract_id', 'id');
     }
 
     /**

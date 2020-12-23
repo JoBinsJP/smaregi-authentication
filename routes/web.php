@@ -16,3 +16,12 @@
 use Illuminate\Routing\Router;
 
 Route::get('/', 'SmaregiAuthAction@authorizeUser');
+Route::get('/dashboard', 'SmaregiAuthAction@dashboard')->name('dashboard');
+$router->get(
+    '/logout',
+    function () {
+        auth()->logout();
+
+        return redirect()->to('/');
+    }
+)->name('logout');

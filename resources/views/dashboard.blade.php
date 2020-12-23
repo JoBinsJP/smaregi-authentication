@@ -67,13 +67,16 @@
 <div class="flex-center position-ref full-height">
     <div class="top-right links">
         @auth
-            <a href="{{ url('/dashboard') }}">Home</a>
+            <a href="{{ url('/logout') }}">ログアウト</a>
         @endauth
     </div>
     <div class="content">
-        <div class="title m-b-md">
-            Dashboard
-        </div>
+        <h3>店舗リスト</h3>
+        @foreach($stores as $store)
+            <div class="card col-md-4">
+                <p>{{$store->smaregi_store_name}}</p>
+            </div>
+        @endforeach
     </div>
 </div>
 </body>

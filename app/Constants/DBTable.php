@@ -10,4 +10,5 @@ final class DBTable
 {
     public const SMAREGI_CONTRACTS = 'smaregi_contracts';
     public const AUTH_USERS        = 'auth_users';
+    public const STORES            = 'stores';
 }
